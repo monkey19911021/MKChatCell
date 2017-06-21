@@ -46,7 +46,7 @@
     msg2.toUserName = @"曹操";
     msg2.msgDirectionType = MSGDirectionTypeReceive;
     msg2.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
-    msg2.content = @"曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！曹操那厮快出来！";
+    msg2.content = @"曹操智计，殊绝于人，其用兵也，仿佛孙、吴，然困于南阳，险于乌巢，危于祁连，逼于黎阳，几败北山，殆死潼关，然后伪定一时耳；况臣才弱，而欲以不危而定之：此臣之未解三也";
     [chatMsgArray addObject: msg2];
     
     ChatingMsg *msg3 = [ChatingMsg new];
@@ -83,7 +83,22 @@
     msg5.toUserName = @"皇叔刘备";
     msg5.msgDirectionType = MSGDirectionTypeSend;
     msg5.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
-    msg5.content = @"测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！测试多行！";
+    msg5.content = @"对酒当歌，人生几何？"
+    "譬如朝露，去日苦多。"
+    "慨当以慷，忧思难忘。"
+    "何以解忧，唯有杜康。"
+    "青青子衿，悠悠我心。"
+    "但为君故，沉吟至今。"
+    "呦呦鹿鸣，食野之苹。"
+    "我有嘉宾，鼓瑟吹笙。"
+    "明明如月，何时可掇。"
+    "忧从中来，不可断绝。"
+    "越陌度阡，枉用相存。"
+    "契阔谈宴，心念旧恩。"
+    "月明星稀，乌鹊南飞。"
+    "绕树三匝，何枝可依？"
+    "山不厌高，海不厌深。"
+    "周公吐哺，天下归心。";
     [chatMsgArray addObject: msg5];
     
     ChatingMsg *msg6 = [ChatingMsg new];

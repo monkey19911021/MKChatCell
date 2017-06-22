@@ -14,16 +14,27 @@
  下载数据
  
  @param indexPath indexPath
+ @param completeHandler 下载完成处理块
  */
--(void)downLoadData:(NSIndexPath *)indexPath;
+-(void)downLoadData: (NSIndexPath *)indexPath
+    completeHandler: (void(^)(BOOL success))completeHandler;
+
 
 
 /**
- 点击头像查看人员信息
+ 获取聊天框的头像
+ 
+ @param indexPath indexPath
+ @return 头像图片
+ */
+-(UIImage *)headImageForIndexPath:(NSIndexPath *)indexPath;
 
+/**
+ 点击头像查看人员信息
+ 
  @param indexPath indexPath
  */
--(void)reviewMemberInfo:(NSIndexPath *)indexPath;
+-(void)reviewMemberInfo: (NSIndexPath *)indexPath;
 
 /**
  该聊天记录里所有的图片附件所在的位置，用于浏览聊天记录里的所有图片
@@ -37,10 +48,15 @@
 @class ChatingMsg;
 @interface MKChatCellContentView : UIView
 
--(instancetype)initWithChatMsg:(ChatingMsg *)msg;
+-(instancetype)initWithChatMsg: (ChatingMsg *) msg
+                 withIndexPath: (NSIndexPath *) indexPath
+                      delegate: (id<MKChatingCellDelegate>) delegate;
 
 @property(strong, nonatomic) NSIndexPath *indexPath;
 
 @property(weak, nonatomic) id<MKChatingCellDelegate> delegate;
+
+
+-(void)showMsgTime;
 
 @end

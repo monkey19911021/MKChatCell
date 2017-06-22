@@ -13,9 +13,10 @@
 #import "MKImagesReViewController.h"
 #import <AVFoundation/AVFoundation.h>
 
-#define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
-#define BgColor ([UIColor colorWithRed:242.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1])
+
 #define BASE_COLOR ([UIColor colorWithRed: 0/255.0 green: 124.0/255.0 blue: 197.0/255 alpha:1])
+#define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
+#define BgColor ([UIColor colorWithRed:242.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1])
 
 //8：头像框与父视图距离，40: 头像框宽度， 2: 头像框与对话框距离， 20：内容框与箭头距离,  12: 内容框与没有箭头那边的距离
 #define ContentFrontMargin (20.0)
@@ -57,9 +58,11 @@
     UIImage *leftImg;
 }
 
--(instancetype)initWithChatMsg:(ChatingMsg *)msg {
+-(instancetype)initWithChatMsg:(ChatingMsg *)msg withIndexPath:(NSIndexPath *)indexPath delegate:(id<MKChatingCellDelegate>)delegate{
     if(self = [super initWithFrame: CGRectMake(0, 0, SCREEN_WIDTH, 0)]){
         chatMsg = msg;
+        _indexPath = indexPath;
+        _delegate = delegate;
         isSend = chatMsg.msgDirectionType == MSGDirectionTypeSend;
         [self configView];
         [self configData];
@@ -89,6 +92,7 @@
     headImageView = [[UIImageView alloc] initWithImage: [UIImage imageNamed: @"head"]];
     headImageView.contentMode = UIViewContentModeScaleToFill;
     headImageView.backgroundColor = BgColor;
+    headImageView.userInteractionEnabled = YES;
     [headImageView zy_cornerRadiusRoundingRect];
     [headImageView addGestureRecognizer: [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(reviewMemberInfo)]];//添加点击头像查看员工信息
     [self addSubview: headImageView];
@@ -105,6 +109,7 @@
     msgTimeLable.textColor = [UIColor darkGrayColor];
     msgTimeLable.font = [UIFont systemFontOfSize: 10];
     msgTimeLable.textAlignment = isSend? NSTextAlignmentRight: NSTextAlignmentLeft;
+    msgTimeLable.hidden = YES;
     [self addSubview: msgTimeLable];
     
     backgroundImageView = [[UIImageView alloc] initWithImage: isSend? rightImg: leftImg];
@@ -115,6 +120,7 @@
     
     contentTextView = [UITextView new];
     contentTextView.backgroundColor = isSend? BASE_COLOR: [UIColor whiteColor];
+    contentTextView.tintColor = isSend? [UIColor whiteColor]: BASE_COLOR;
     contentTextView.textColor = isSend? [UIColor whiteColor]: [UIColor blackColor];
     contentTextView.editable = NO;
     contentTextView.scrollEnabled = NO;
@@ -123,6 +129,7 @@
     contentTextView.textContainer.lineFragmentPadding = 0; //消除边距
     contentTextView.textContainerInset = UIEdgeInsetsZero;
     contentTextView.textAlignment = NSTextAlignmentLeft;
+    contentTextView.font = [UIFont systemFontOfSize: 17];
     [backgroundImageView addSubview: contentTextView];
     
     contentImageView = [[UIImageView alloc] initWithImage: [UIImage imageNamed: @"imagePlaceholder"]];
@@ -156,8 +163,18 @@
 }
 
 -(void)configData {
-//    headImageView.image = [UIImage imageNamed: @""];//设置头像，一般头像都要去下载或者加载本地缓存
+    //设置头像，一般头像都要去下载或者加载本地缓存
+    if([_delegate respondsToSelector: @selector(headImageForIndexPath:)]){
+        UIImage *headImg = [_delegate headImageForIndexPath: _indexPath];
+        if(headImg){
+            headImageView.image = headImg;
+        }
+    }
+    
+    //名字
     nameLabel.text = chatMsg.fromUserName;
+    
+    //消息时间
     msgTimeLable.text = [dateFormatter stringFromDate: [NSDate dateWithTimeIntervalSince1970: chatMsg.sendDate/1000.0]];
     
     switch (chatMsg.attachType) {
@@ -194,8 +211,15 @@
     contentTextView.hidden = YES;
     contentImageView.hidden = NO;
     audioBtn.hidden = YES;
-    contentImageView.image = [UIImage imageWithContentsOfFile: chatMsg.attachFilePath];
     [contentImageView addSubview: activityIndicatorView];
+    
+    UIImage *image = [UIImage imageWithContentsOfFile: chatMsg.attachFilePath];
+    if(image){
+        contentImageView.image = image;
+    }else{
+        //图片缓存不存在，重新下载
+        [self downloadData];
+    }
 }
 
 -(void)configtAudioView {
@@ -215,6 +239,9 @@
         NSInteger min = ((NSInteger)duration)/60;
         NSInteger sec = ((NSInteger)duration)%60;
         audioTimeLabel.text = min > 0? [NSString stringWithFormat:@"%@'%@''", @(min), @(sec)]: [NSString stringWithFormat:@"%@''", @(sec)];
+    }else{
+        //声音缓存不存在，重新下载
+        [self downloadData];
     }
 }
 
@@ -237,19 +264,17 @@
                                                          alignItems: FBAlignCenter
                                                            children:(@[nameLabel, msgTimeLable])];
     //------------------
-    if(activityIndicatorView.isAnimating){
-        [activityIndicatorView fb_makeLayout:^(FBLayout *layout) {
-            layout.wrapContent();
-        }];
-        
-        [contentImageView fb_makeLayout:^(FBLayout *layout) {
-            layout.flexDirection.equalTo(@(FBFlexDirectionRow))
-            .justifyContent.equalTo(@(FBJustifyCenter))
-            .alignItems.equalTo(@(FBAlignCenter))
-            .margin.equalToEdgeInsets(UIEdgeInsetsMake(0, 0, 0, 0))
-            .children(@[activityIndicatorView]);
-        }];
-    }
+    [activityIndicatorView fb_makeLayout:^(FBLayout *layout) {
+        layout.wrapContent();
+    }];
+    
+    [contentImageView fb_makeLayout:^(FBLayout *layout) {
+        layout.flexDirection.equalTo(@(FBFlexDirectionRow))
+        .justifyContent.equalTo(@(FBJustifyCenter))
+        .alignItems.equalTo(@(FBAlignCenter))
+        .margin.equalToEdgeInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+        .children(@[activityIndicatorView]);
+    }];
     
     //------------------
     UIView *showView = contentTextView;
@@ -333,14 +358,14 @@
     }];
     
     FBLayoutDiv *contentDiv = [FBLayoutDiv layoutDivWithFlexDirection: isSend? FBFlexDirectionRowReverse: FBFlexDirectionRow
-                                                          justifyContent: FBJustifyFlexStart
-                                                              alignItems: FBAlignFlexStart
-                                                                children: @[backgroundImageView, audioTimeLabel]];
+                                                       justifyContent: FBJustifyFlexStart
+                                                           alignItems: FBAlignFlexStart
+                                                             children: @[backgroundImageView, audioTimeLabel]];
     
     FBLayoutDiv *bodyDiv = [FBLayoutDiv layoutDivWithFlexDirection:FBFlexDirectionColumn
-                                                       justifyContent:FBJustifyCenter
-                                                           alignItems: isSend? FBAlignFlexEnd: FBAlignFlexStart
-                                                             children:(@[titleDiv, contentDiv])];
+                                                    justifyContent:FBJustifyCenter
+                                                        alignItems: isSend? FBAlignFlexEnd: FBAlignFlexStart
+                                                          children:(@[titleDiv, contentDiv])];
     
     
     [self fb_makeLayout:^(FBLayout *layout) {
@@ -355,7 +380,9 @@
 
 #pragma mark - 查看对话人资料
 -(void)reviewMemberInfo {
-    
+    if([_delegate respondsToSelector: @selector(reviewMemberInfo:)]){
+        [_delegate reviewMemberInfo: _indexPath];
+    }
 }
 
 #pragma mark - 看图
@@ -381,9 +408,7 @@
         [[MKImagesReViewController new] showImages: viableFilePaths index: index afterDismissBlock:nil];
     }else{
         //图片缓存不存在，重新下载
-        if([_delegate respondsToSelector: @selector(downLoadData:)]){
-            [_delegate downLoadData: _indexPath];
-        }
+        [self downloadData];
     }
     
 }
@@ -400,9 +425,34 @@
         }
     }else{
         //音频缓存不存在，重新下载
-        if([_delegate respondsToSelector: @selector(downLoadData:)]){
-            [_delegate downLoadData: _indexPath];
-        }
+        [self downloadData];
+    }
+}
+
+#pragma mark - 下载数据
+-(void)downloadData {
+    if([_delegate respondsToSelector: @selector(downLoadData:completeHandler:)]){
+        [activityIndicatorView startAnimating];
+        [_delegate downLoadData: _indexPath completeHandler:^(BOOL success) {
+            [activityIndicatorView stopAnimating];
+        }];
+    }
+}
+
+-(void)showMsgTime {
+    if(msgTimeLable.hidden){
+        msgTimeLable.alpha = 0;
+        msgTimeLable.hidden = NO;
+        [UIView animateWithDuration:0.3 animations:^{
+            msgTimeLable.alpha = 1;
+        }];
+    }else{
+        [UIView animateWithDuration:0.3 animations:^{
+            msgTimeLable.alpha = 0;
+        } completion:^(BOOL finished) {
+            msgTimeLable.hidden = YES;
+            msgTimeLable.alpha = 1;
+        }];
     }
 }
 
@@ -410,13 +460,5 @@
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     [audioBtn.imageView stopAnimating];
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
 
 @end

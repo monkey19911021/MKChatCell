@@ -132,9 +132,9 @@
     chatTableView.backgroundColor = [UIColor colorWithRed:242.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1];
     [chatTableView registerClass: [UITableViewCell class] forCellReuseIdentifier: @"fb_kCellIdentifier"];
     [chatTableView fb_setCellContnetViewBlockForIndexPath:^UIView * _Nonnull(NSIndexPath * _Nonnull indexPath) {
-        MKChatCellContentView *cellView = [[MKChatCellContentView alloc] initWithChatMsg: chatMsgArray[indexPath.row]];
-        cellView.indexPath = indexPath;
-        cellView.delegate = self;
+        MKChatCellContentView *cellView = [[MKChatCellContentView alloc] initWithChatMsg: chatMsgArray[indexPath.row]
+                                                                           withIndexPath: indexPath
+                                                                                delegate: self];
         return cellView;
     }];
     chatTableView.tableFooterView = [[UIView alloc] init];
@@ -154,9 +154,16 @@
     return [tableView fb_cellForIndexPath: indexPath];
 }
 
+
 #pragma mark - MKChatingCellDelegate
--(void)downLoadData:(NSIndexPath *)indexPath {
+-(void)downLoadData:(NSIndexPath *)indexPath
+    completeHandler:(void (^)(BOOL))completeHandler{
     
+}
+
+
+-(UIImage *)headImageForIndexPath:(NSIndexPath *)indexPath {
+    return [UIImage imageNamed: @"head"];
 }
 
 -(void)reviewMemberInfo:(NSIndexPath *)indexPath {

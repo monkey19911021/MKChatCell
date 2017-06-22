@@ -31,28 +31,35 @@
 {
     ChatingMsg *chatMsg;
     
+    //头像
     UIImageView *headImageView;
     
+    //名字
     UILabel *nameLabel;
+    //消息时间
     UILabel *msgTimeLable;
+    //背景图，即对话泡
     UIImageView *backgroundImageView;
     
+    //文本内容
     UITextView *contentTextView;
     
+    //图片内容
     UIImageView *contentImageView;
     
+    //音频内容
     UIButton *audioBtn;
+    //音频时间
     UILabel *audioTimeLabel;
-    
-    UIActivityIndicatorView *activityIndicatorView;
-    
     NSMutableArray<UIImage *> *leftVoiceImages;
     NSMutableArray<UIImage *> *rightVoiceImages;
-    __block AVAudioPlayer *audioPlayer;
+    AVAudioPlayer *audioPlayer;
+    
+    //活动指示图
+    UIActivityIndicatorView *activityIndicatorView;
     
     BOOL isSend;
     NSDateFormatter *dateFormatter;
-    NSFileManager *fileMgr;
     
     UIImage *rightImg;
     UIImage *leftImg;
@@ -76,8 +83,6 @@
     
     dateFormatter = [NSDateFormatter new];
     [dateFormatter setDateFormat: @"yyyy-MM-dd HH:mm"];
-    
-    fileMgr = [NSFileManager defaultManager];
     
     rightImg = [[UIImage imageNamed: @"canvas_right"] imageWithRenderingMode: UIImageRenderingModeAlwaysTemplate];
     leftImg = [[UIImage imageNamed: @"canvas_left"] imageWithRenderingMode: UIImageRenderingModeAlwaysTemplate];
@@ -394,7 +399,7 @@
     NSArray *filePaths = [_delegate allImageAttachFileParths];
     NSMutableArray *viableFilePaths = @[].mutableCopy; //存在缓存里的图片
     for(NSString *path in filePaths){
-        if([fileMgr fileExistsAtPath: path]){ //过滤掉没缓存的照片
+        if([[NSFileManager defaultManager] fileExistsAtPath: path]){ //过滤掉没缓存的照片
             [viableFilePaths addObject: path];
             
             if([path isEqualToString: chatMsg.attachFilePath]){

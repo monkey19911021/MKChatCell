@@ -194,7 +194,7 @@
     contentTextView.hidden = YES;
     contentImageView.hidden = NO;
     audioBtn.hidden = YES;
-    contentImageView.image = [UIImage imageWithData: chatMsg.attachData];
+    contentImageView.image = [UIImage imageWithContentsOfFile: chatMsg.attachFilePath];
     [contentImageView addSubview: activityIndicatorView];
 }
 
@@ -203,7 +203,7 @@
     contentImageView.hidden = YES;
     audioBtn.hidden = NO;
     
-    NSData *audioData = chatMsg.attachData;
+    NSData *audioData = [NSData dataWithContentsOfFile: chatMsg.attachFilePath];
     NSTimeInterval duration = 10;
     audioTimeLabel.text = @"";
     if(audioData){

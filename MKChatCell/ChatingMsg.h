@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, MSGAttachType) {
 @property(assign, nonatomic) MSGDirectionType msgDirectionType; //是发送还是接受
 @property(assign, nonatomic) NSTimeInterval sendDate;//": "发送时间，时间毫秒数",
 @property(copy, nonatomic) NSString *content;//": "文字内容",
-@property(strong, nonatomic) NSData *attachData; //附件数据
+@property(copy, nonatomic) NSString *attachFilePath; //附件数据位置
 @property(copy, nonatomic) NSString *attachID;//": "附件ID",
 @property(assign, nonatomic) MSGAttachType attachType;//": "附件类型，0: 文字，1: 图片, 2: 音频, 3: 视频, 4: 文本文件（如word、ppt） 5: URL地址",
 

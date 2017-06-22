@@ -56,7 +56,7 @@
     msg3.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
     msg3.content = @"[图片]";
     msg3.attachID = @"101";
-    msg3.attachData = UIImageJPEGRepresentation([UIImage imageNamed: msg3.attachID], 1);
+    msg3.attachFilePath = [[NSBundle mainBundle] pathForResource: msg3.attachID ofType: @"png"];
     msg3.attachType = MSGAttachTypeImage;
     [chatMsgArray addObject: msg3];
     
@@ -66,7 +66,7 @@
     msg3_1.msgDirectionType = MSGDirectionTypeReceive;
     msg3_1.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
     msg3_1.content = @"[录音]";
-    msg3_1.attachData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"testSong" ofType: @"mp3"]];
+    msg3_1.attachFilePath = [[NSBundle mainBundle] pathForResource: @"testSong" ofType: @"mp3"];
     msg3_1.attachType = MSGAttachTypeAudio;
     [chatMsgArray addObject: msg3_1];
     
@@ -108,7 +108,7 @@
     msg6.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
     msg6.content = @"[图片]";
     msg6.attachID = @"102";
-    msg6.attachData = UIImageJPEGRepresentation([UIImage imageNamed: msg6.attachID], 1);
+    msg6.attachFilePath = [[NSBundle mainBundle] pathForResource: msg6.attachID ofType: @"png"];
     msg6.attachType = MSGAttachTypeImage;
     [chatMsgArray addObject: msg6];
     
@@ -118,7 +118,7 @@
     msg6_1.msgDirectionType = MSGDirectionTypeSend;
     msg6_1.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
     msg6_1.content = @"[录音]";
-    msg6_1.attachData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"testSong" ofType: @"mp3"]];
+    msg6_1.attachFilePath = [[NSBundle mainBundle] pathForResource: @"testSong" ofType: @"mp3"];
     msg6_1.attachType = MSGAttachTypeAudio;
     [chatMsgArray addObject: msg6_1];
 }

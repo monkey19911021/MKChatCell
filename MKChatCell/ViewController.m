@@ -55,8 +55,7 @@
     msg3.msgDirectionType = MSGDirectionTypeReceive;
     msg3.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
     msg3.content = @"[图片]";
-    msg3.attachID = @"101";
-    msg3.attachFilePath = [[NSBundle mainBundle] pathForResource: msg3.attachID ofType: @"png"];
+    msg3.attachFilePath = [[NSBundle mainBundle] pathForResource: @"101" ofType: @"png"];
     msg3.attachType = MSGAttachTypeImage;
     [chatMsgArray addObject: msg3];
     
@@ -107,8 +106,7 @@
     msg6.msgDirectionType = MSGDirectionTypeSend;
     msg6.sendDate = [[NSDate date] timeIntervalSince1970] * 1000;
     msg6.content = @"[图片]";
-    msg6.attachID = @"102";
-    msg6.attachFilePath = [[NSBundle mainBundle] pathForResource: msg6.attachID ofType: @"png"];
+    msg6.attachFilePath = [[NSBundle mainBundle] pathForResource: @"102" ofType: @"png"];
     msg6.attachType = MSGAttachTypeImage;
     [chatMsgArray addObject: msg6];
     
@@ -174,7 +172,7 @@
     NSMutableArray *filePaths =@[].mutableCopy;
     for(ChatingMsg *msg in chatMsgArray){
         if(msg.attachType == MSGAttachTypeImage){
-            [filePaths addObject: [[NSBundle mainBundle] pathForResource: msg.attachID ofType: @"png"]];
+            [filePaths addObject: msg.attachFilePath];
         }
     }
     return filePaths;

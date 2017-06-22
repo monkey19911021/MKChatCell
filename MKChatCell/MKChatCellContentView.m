@@ -397,8 +397,7 @@
         if([fileMgr fileExistsAtPath: path]){ //过滤掉没缓存的照片
             [viableFilePaths addObject: path];
             
-            NSString *fileName = [[path lastPathComponent] stringByDeletingPathExtension];
-            if([fileName isEqualToString: chatMsg.attachID]){
+            if([path isEqualToString: chatMsg.attachFilePath]){
                 index = [filePaths indexOfObject: path];
             }
         }
